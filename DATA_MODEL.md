@@ -584,13 +584,21 @@ npx prisma migrate deploy
 
 ## Environment variables
 
-Required:
+Required for PostgreSQL-backed development and production:
 
 ```env
 DATABASE_URL="postgresql://one:one_password@postgres:5432/one_game?schema=public"
 SESSION_SECRET="change-me"
 NODE_ENV="development"
 ```
+
+Database-free local gameplay debugging:
+
+```env
+ONE_LOCAL_MEMORY="1"
+```
+
+When `ONE_LOCAL_MEMORY=1`, persistence is process-local and seeds two test users: `host` / `password123` and `guest` / `password123`. Restarting the server clears rooms, sessions, games, chat, and events.
 
 Optional later:
 

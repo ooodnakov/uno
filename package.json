@@ -8,6 +8,7 @@
   },
   "scripts": {
     "dev": "tsx src/server/index.ts",
+    "dev:memory": "ONE_LOCAL_MEMORY=1 tsx src/server/index.ts",
     "build": "next build && tsc -p tsconfig.server.json",
     "start": "node dist/server/index.js",
     "typecheck": "tsc --noEmit && tsc -p tsconfig.server.json --noEmit",

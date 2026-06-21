@@ -1,6 +1,6 @@
-import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
+import { isUniqueConstraintError } from "@/lib/db/errors";
 import { prisma } from "@/lib/db/prisma";
 
 import { hashPassword, verifyPassword } from "./password";
@@ -52,10 +52,7 @@ export async function registerUser(input: unknown): Promise<AuthActionResult> {
     await createSession(user.id);
     return { ok: true };
   } catch (error) {
-    if (
-      error instanceof Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
-    ) {
+    if (isUniqueConstraintError(error)) {
       return {
         ok: false,
         message: "That username is already taken.",

@@ -16,6 +16,8 @@ Server-authoritative MVP for a real-time multiplayer color and number card game.
 
 ## Local Development
 
+PostgreSQL-backed mode:
+
 ```bash
 pnpm install
 cp .env.example .env
@@ -25,7 +27,24 @@ pnpm prisma:generate
 pnpm dev
 ```
 
-Open `http://localhost:3000`.
+Database-free local game debugging:
+
+```bash
+pnpm install
+pnpm prisma:generate
+pnpm dev:memory
+```
+
+Memory mode keeps users, rooms, sessions, games, chat, and events inside the Node.js process. Restarting the server clears them. Open `http://localhost:3000`.
+
+Default memory-mode users:
+
+| Username | Password | Display name |
+| --- | --- | --- |
+| `host` | `password123` | `Host` |
+| `guest` | `password123` | `Guest` |
+
+Use two browsers or profiles so each user has a separate session cookie.
 
 ## Database
 
@@ -63,13 +82,12 @@ curl http://127.0.0.1:3000/api/health
 
 ## Playtest
 
-1. Start Postgres and the app with the local development commands above.
-2. Open `http://localhost:3000/register` in two different browsers or profiles.
-3. Register two users.
-4. User one creates a room from `/lobby`.
-5. User two joins from the public lobby or by the room invite code.
-6. The host starts the game.
-7. Play with card clicks, Draw, Pass, ONE!, callout buttons, chat, and reactions.
+1. Start either Postgres mode or memory mode from the local development commands above.
+2. In memory mode, log in as `host` in one browser/profile and `guest` in another. In Postgres mode, register two users first.
+3. Host creates a room from `/lobby`.
+4. Guest joins from the public lobby or by the room invite code.
+5. Host starts the game.
+6. Play with card clicks, Draw, Pass, ONE!, callout buttons, chat, and reactions.
 
 The server owns deck order, legal move validation, hidden hands, timers, bot
 takeover, and persisted game snapshots.

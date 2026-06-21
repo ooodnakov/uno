@@ -1,8 +1,9 @@
 import { Prisma, type RoomVisibility } from "@prisma/client";
 import { z } from "zod";
 
-import { CLASSIC_RULE_CONFIG, type RuleConfig } from "@/lib/game/types";
+import { isUniqueConstraintError } from "@/lib/db/errors";
 import { prisma } from "@/lib/db/prisma";
+import { CLASSIC_RULE_CONFIG, type RuleConfig } from "@/lib/game/types";
 
 export const createRoomInputSchema = z.object({
   name: z.string().trim().min(1).max(48),
@@ -143,10 +144,7 @@ export async function createRoom(
         roomId: room.id,
       };
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2002"
-      ) {
+      if (isUniqueConstraintError(error)) {
         continue;
       }
 
