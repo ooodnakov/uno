@@ -59,7 +59,12 @@ button,
   background: var(--panel);
   color: var(--foreground);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 button:disabled {
@@ -245,11 +250,6 @@ main {
   background: var(--primary);
   color: var(--primary-text);
   border-color: var(--primary);
-}
-
-.game-board,
-.live-side {
-  transition: opacity 0.3s ease;
 }
 
 .narrow-page,
@@ -764,12 +764,16 @@ main {
   }
 
   .opponent-strip {
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     padding-bottom: 8px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+  }
+
+  .opponent-strip .opponent-seat {
+    flex: 0 0 120px;
   }
 
   .opponent-strip::-webkit-scrollbar {

@@ -247,7 +247,9 @@ export function RoomClient({
       </div>
 
       {!gameState ? (
-        <WaitingRoom roomState={roomState} currentUserId={currentUserId} />
+        <div className={activeTab === "chat" ? "hide-on-mobile" : ""}>
+          <WaitingRoom roomState={roomState} currentUserId={currentUserId} />
+        </div>
       ) : (
         <section
           className={`game-board ${activeTab === "chat" ? "hide-on-mobile" : ""}`}
