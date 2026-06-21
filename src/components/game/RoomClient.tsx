@@ -32,10 +32,15 @@ export function RoomClient({
   const [roomState, setRoomState] = useState<RoomStatePayload>(initialRoom);
   const [gameState, setGameState] = useState<GameStatePayload | null>(null);
   const [events, setEvents] = useState<GameEventPayload[]>([]);
-  const [messages, setMessages] = useState<Array<{ id: string; text: string; displayName: string }>>([]);
+  const [messages, setMessages] = useState<
+    Array<{ id: string; text: string; displayName: string }>
+  >([]);
   const [lastReaction, setLastReaction] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedWildCardId, setSelectedWildCardId] = useState<string | null>(null);
+  const [selectedWildCardId, setSelectedWildCardId] = useState<string | null>(
+    null,
+  );
+  const [activeTab, setActiveTab] = useState<"game" | "chat">("game");
 
   useEffect(() => {
     const nextSocket: ClientSocket = io({
@@ -98,7 +103,9 @@ export function RoomClient({
   );
   const isHost = selfRoomPlayer?.isHost ?? false;
   const canStart =
-    isHost && roomState.room.status !== "IN_GAME" && roomState.players.length >= 2;
+    isHost &&
+    roomState.room.status !== "IN_GAME" &&
+    roomState.players.length >= 2;
   const topDiscard = gameState?.table.topDiscard;
   const turnSecondsLeft = useTurnSecondsLeft(gameState?.table.turnEndsAt);
 
@@ -107,7 +114,9 @@ export function RoomClient({
   }
 
   function playCard(cardId: string) {
-    const card = gameState?.self.hand.find((candidate) => candidate.id === cardId);
+    const card = gameState?.self.hand.find(
+      (candidate) => candidate.id === cardId,
+    );
 
     if (!gameState || !card || !socket) {
       return;
@@ -220,16 +229,38 @@ export function RoomClient({
         </button>
       </div>
 
+      <div className="mobile-tabs">
+        <button
+          className={activeTab === "game" ? "active" : ""}
+          onClick={() => setActiveTab("game")}
+          type="button"
+        >
+          Game Board
+        </button>
+        <button
+          className={activeTab === "chat" ? "active" : ""}
+          onClick={() => setActiveTab("chat")}
+          type="button"
+        >
+          Chat & Events
+        </button>
+      </div>
+
       {!gameState ? (
-        <WaitingRoom roomState={roomState} currentUserId={currentUserId} />
+        <div className={activeTab === "chat" ? "hide-on-mobile" : ""}>
+          <WaitingRoom roomState={roomState} currentUserId={currentUserId} />
+        </div>
       ) : (
-        <section className="game-board">
+        <section
+          className={`game-board ${activeTab === "chat" ? "hide-on-mobile" : ""}`}
+        >
           <div className="opponent-strip">
             {gameState.players
               .filter((player) => player.playerId !== gameState.self.playerId)
-              .map((player) => (
+              .map((player, index) => (
                 <div
                   className={`opponent-seat ${player.isCurrentTurn ? "active" : ""}`}
+                  style={{ "--index": index } as React.CSSProperties}
                   key={player.playerId}
                 >
                   <strong>{player.displayName}</strong>
@@ -267,11 +298,15 @@ export function RoomClient({
                 {cardLabel(topDiscard)}
               </button>
             ) : null}
-            <div className={`current-color ${gameState.table.currentColor.toLowerCase()}`}>
+            <div
+              className={`current-color ${gameState.table.currentColor.toLowerCase()}`}
+            >
               {gameState.table.currentColor}
             </div>
             <div className="turn-panel">
-              <span>{gameState.table.direction === 1 ? "Clockwise" : "Counter"}</span>
+              <span>
+                {gameState.table.direction === 1 ? "Clockwise" : "Counter"}
+              </span>
               <strong>{turnSecondsLeft}s</strong>
               <span>
                 {gameState.self.isCurrentTurn
@@ -283,6 +318,7 @@ export function RoomClient({
 
           <div className="action-row">
             <button
+              className="button secondary"
               type="button"
               disabled={!gameState.availableActions.canDraw}
               onClick={() => emitGameAction("draw")}
@@ -290,6 +326,7 @@ export function RoomClient({
               Draw
             </button>
             <button
+              className="button secondary"
               type="button"
               disabled={!gameState.availableActions.canPass}
               onClick={() => emitGameAction("pass")}
@@ -297,6 +334,7 @@ export function RoomClient({
               Pass
             </button>
             <button
+              className="button primary"
               type="button"
               disabled={!gameState.availableActions.canDeclareOne}
               onClick={() => emitGameAction("declareOne")}
@@ -321,7 +359,7 @@ export function RoomClient({
           ) : null}
 
           <div className="hand-zone" aria-label="Your hand">
-            {gameState.self.hand.map((card) => {
+            {gameState.self.hand.map((card, index) => {
               const playable =
                 gameState.availableActions.playableCardIds.includes(card.id);
               return (
@@ -331,6 +369,7 @@ export function RoomClient({
                   }`}
                   disabled={!playable}
                   key={card.id}
+                  style={{ "--index": index } as React.CSSProperties}
                   type="button"
                   onClick={() => playCard(card.id)}
                 >
@@ -342,7 +381,9 @@ export function RoomClient({
         </section>
       )}
 
-      <aside className="live-side">
+      <aside
+        className={`live-side ${activeTab === "game" ? "hide-on-mobile" : ""}`}
+      >
         <div>
           <h2>Chat</h2>
           <ul className="chat-list">

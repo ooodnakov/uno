@@ -1,3 +1,14 @@
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.9) translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
 :root {
   color-scheme: light;
   --background: #f7f5f0;
@@ -24,7 +35,12 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
     sans-serif;
 }
 
@@ -54,6 +70,12 @@ button,
   background: var(--panel);
   color: var(--foreground);
   cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 button:disabled {
@@ -76,8 +98,16 @@ select {
   color: var(--primary-text);
 }
 
+.button.primary:hover {
+  background: #111a30;
+}
+
 .button.secondary {
   background: transparent;
+}
+
+.button.secondary:hover {
+  background: rgba(0, 0, 0, 0.04);
 }
 
 .topbar {
@@ -212,6 +242,25 @@ main {
   transform: translate(92px, 82px) rotate(11deg);
   background: var(--yellow);
   color: #25200a;
+}
+
+.mobile-tabs {
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.mobile-tabs button {
+  min-height: 48px;
+  font-weight: 600;
+  border-radius: 12px;
+}
+
+.mobile-tabs button.active {
+  background: var(--primary);
+  color: var(--primary-text);
+  border-color: var(--primary);
 }
 
 .narrow-page,
@@ -440,6 +489,8 @@ main {
 
 .opponent-seat {
   display: grid;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation-delay: calc(var(--index, 0) * 0.06s);
   gap: 6px;
   border: 1px solid rgb(255 255 255 / 32%);
   border-radius: 8px;
@@ -503,6 +554,8 @@ main {
 
 .game-card {
   display: grid;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation-delay: calc(var(--index, 0) * 0.04s);
   width: 76px;
   aspect-ratio: 2 / 3;
   place-items: center;
@@ -511,7 +564,13 @@ main {
   color: white;
   font-size: 1.35rem;
   font-weight: 900;
-  box-shadow: 0 10px 22px rgb(0 0 0 / 18%);
+  box-shadow:
+    0 4px 12px rgb(0 0 0 / 15%),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition:
+    transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.2s ease;
+  user-select: none;
 }
 
 .game-card.red {
@@ -535,11 +594,16 @@ main {
   background: #1d1d1f;
 }
 
+.game-card.playable:hover {
+  transform: translateY(-12px) scale(1.05);
+  cursor: pointer;
+}
+
 .game-card.playable {
   transform: translateY(-8px);
   box-shadow:
-    0 12px 24px rgb(0 0 0 / 22%),
-    0 0 0 3px rgb(255 255 255 / 70%);
+    0 14px 28px rgb(0 0 0 / 25%),
+    0 0 0 3px rgb(255 255 255 / 80%);
 }
 
 .game-card:disabled:not(.playable) {
@@ -664,6 +728,8 @@ main {
 
 .card-face {
   display: grid;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+  animation-delay: calc(var(--index, 0) * 0.04s);
   width: 64px;
   aspect-ratio: 2 / 3;
   place-items: center;
@@ -705,6 +771,45 @@ main {
 }
 
 @media (max-width: 760px) {
+  .mobile-tabs {
+    display: grid;
+  }
+
+  .live-room {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .opponent-strip {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .opponent-strip .opponent-seat {
+    flex: 0 0 120px;
+  }
+
+  .opponent-strip::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hand-zone {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    padding-inline: 16px;
+  }
+
+  .hand-zone .game-card {
+    flex: 0 0 auto;
+  }
+
   .topbar {
     align-items: start;
     flex-direction: column;
@@ -736,5 +841,11 @@ main {
   .join-panel,
   .room-summary {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .hide-on-mobile {
+    display: none !important;
   }
 }
