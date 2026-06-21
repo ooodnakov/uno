@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: one_password
       POSTGRES_DB: one_game
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U one -d one_game"]
+      test: [ "CMD-SHELL", "pg_isready -U one -d one_game" ]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -17,6 +17,7 @@ services:
 
   app:
     build: .
+    container_name: one_game
     depends_on:
       postgres:
         condition: service_healthy
