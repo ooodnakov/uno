@@ -257,9 +257,10 @@ export function RoomClient({
           <div className="opponent-strip">
             {gameState.players
               .filter((player) => player.playerId !== gameState.self.playerId)
-              .map((player) => (
+              .map((player, index) => (
                 <div
                   className={`opponent-seat ${player.isCurrentTurn ? "active" : ""}`}
+                  style={{ "--index": index } as React.CSSProperties}
                   key={player.playerId}
                 >
                   <strong>{player.displayName}</strong>
@@ -358,7 +359,7 @@ export function RoomClient({
           ) : null}
 
           <div className="hand-zone" aria-label="Your hand">
-            {gameState.self.hand.map((card) => {
+            {gameState.self.hand.map((card, index) => {
               const playable =
                 gameState.availableActions.playableCardIds.includes(card.id);
               return (
@@ -368,6 +369,7 @@ export function RoomClient({
                   }`}
                   disabled={!playable}
                   key={card.id}
+                  style={{ "--index": index } as React.CSSProperties}
                   type="button"
                   onClick={() => playCard(card.id)}
                 >
