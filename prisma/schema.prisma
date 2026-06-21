@@ -1,0 +1,156 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  displayName  String
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  roomsHosted  Room[]        @relation("RoomHost")
+  roomPlayers  RoomPlayer[]
+  gamePlayers  GamePlayer[]
+  chatMessages ChatMessage[]
+  sessions     Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Room {
+  id         String         @id @default(cuid())
+  code       String         @unique
+  name       String
+  visibility RoomVisibility
+  status     RoomStatus     @default(WAITING)
+  hostUserId String
+  maxPlayers Int
+  ruleConfig Json
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  host     User          @relation("RoomHost", fields: [hostUserId], references: [id])
+  players  RoomPlayer[]
+  games    Game[]
+  messages ChatMessage[]
+
+  @@index([visibility, status])
+  @@index([hostUserId])
+}
+
+model RoomPlayer {
+  id              String   @id @default(cuid())
+  roomId          String
+  userId          String
+  seatIndex       Int
+  isHost          Boolean  @default(false)
+  isConnected     Boolean  @default(true)
+  controlledByBot Boolean  @default(false)
+  joinedAt        DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, userId])
+  @@unique([roomId, seatIndex])
+  @@index([userId])
+}
+
+model Game {
+  id            String     @id @default(cuid())
+  roomId        String
+  roundNumber   Int        @default(1)
+  status        GameStatus @default(PLAYING)
+  stateSnapshot Json
+  winnerUserId  String?
+  startedAt     DateTime   @default(now())
+  finishedAt    DateTime?
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  room    Room         @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  players GamePlayer[]
+  events  GameEvent[]
+
+  @@index([roomId, status])
+  @@index([winnerUserId])
+}
+
+model GamePlayer {
+  id              String   @id @default(cuid())
+  gameId          String
+  userId          String
+  seatIndex       Int
+  finalPosition   Int?
+  controlledByBot Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, userId])
+  @@unique([gameId, seatIndex])
+  @@index([userId])
+}
+
+model GameEvent {
+  id          String   @id @default(cuid())
+  gameId      String
+  type        String
+  actorUserId String?
+  payload     Json
+  createdAt   DateTime @default(now())
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@index([gameId, createdAt])
+  @@index([type])
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  roomId    String
+  userId    String
+  text      String
+  createdAt DateTime @default(now())
+
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([roomId, createdAt])
+  @@index([userId])
+}
+
+enum RoomVisibility {
+  PUBLIC
+  PRIVATE
+}
+
+enum RoomStatus {
+  WAITING
+  IN_GAME
+  FINISHED
+  ABANDONED
+}
+
+enum GameStatus {
+  PLAYING
+  ROUND_FINISHED
+  ABANDONED
+}

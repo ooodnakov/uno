@@ -1,0 +1,56 @@
+
+AGENTS.md
+DESIGN.md
+IMPLEMENTATION_PLAN.md
+RULES.md
+REALTIME_PROTOCOL.md
+DATA_MODEL.md
+docker-compose.yml
+Dockerfile
+package.json
+prisma/
+schema.prisma
+migrations/
+src/
+app/
+    page.tsx
+    login/page.tsx
+    register/page.tsx
+    lobby/page.tsx
+    room/[roomId]/page.tsx
+components/
+    game/
+    Card.tsx
+    Hand.tsx
+    GameTable.tsx
+    PlayerSeat.tsx
+    TurnTimer.tsx
+    ColorPicker.tsx
+    EventLog.tsx
+    lobby/
+    RoomCard.tsx
+    CreateRoomDialog.tsx
+    chat/
+    ChatPanel.tsx
+    ReactionBar.tsx
+lib/
+    auth/
+    db/
+    game/
+    cards.ts
+    deck.ts
+    engine.ts
+    rules.ts
+    bots.ts
+    state.ts
+    validators.ts
+    realtime/
+    server.ts
+    events.ts
+    handlers.ts
+    telegram/
+    initData.ts
+server/
+    index.ts
+    socket.ts
+styles/

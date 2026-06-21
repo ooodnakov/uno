@@ -1,0 +1,15 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "incremental": false,
+    "jsx": "react-jsx",
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noEmit": false,
+    "outDir": "dist",
+    "plugins": [],
+    "rootDir": "src"
+  },
+  "include": ["src/server/**/*.ts", "src/lib/realtime/**/*.ts", "src/lib/game/**/*.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}

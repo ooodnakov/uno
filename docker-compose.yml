@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: one
+      POSTGRES_PASSWORD: one_password
+      POSTGRES_DB: one_game
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U one -d one_game"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build: .
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: "postgresql://one:one_password@postgres:5432/one_game?schema=public"
+      HOSTNAME: "0.0.0.0"
+      NODE_ENV: "production"
+      PORT: "3000"
+      SESSION_SECRET: "change-me"
+    ports:
+      - "3000:3000"
+
+volumes:
+  postgres_data:
