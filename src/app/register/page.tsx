@@ -13,7 +13,8 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
 
   return (
     <section className="narrow-page">
-      <h1>Register</h1>
+      <p className="eyebrow">Seat check</p>
+      <h1>Claim a seat</h1>
       <form action={registerAction} className="form-panel">
         {error ? <p className="form-error">{error}</p> : null}
         <label>
@@ -49,7 +50,7 @@ export default async function RegisterPage({ searchParams }: RegisterPageProps) 
           />
         </label>
         <button type="submit">
-          Register
+          Create account
         </button>
       </form>
       <p className="muted">

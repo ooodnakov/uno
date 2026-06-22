@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { JetBrains_Mono, Manrope, Unbounded } from "next/font/google";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -6,6 +7,22 @@ import { logoutAction } from "@/app/actions/auth";
 import { getCurrentUser } from "@/lib/auth/session";
 
 import "./globals.css";
+
+const displayFont = Unbounded({
+  subsets: ["cyrillic", "latin"],
+  variable: "--display-font",
+  weight: ["700", "900"],
+});
+
+const bodyFont = Manrope({
+  subsets: ["cyrillic", "latin"],
+  variable: "--body-font",
+});
+
+const monoFont = JetBrains_Mono({
+  subsets: ["cyrillic", "latin"],
+  variable: "--mono-font",
+});
 
 export const metadata: Metadata = {
   title: "ONE / Odin",
@@ -17,7 +34,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
 
   return (
     <html lang="en">
-      <body>
+      <body className={`${displayFont.variable} ${bodyFont.variable} ${monoFont.variable}`}>
         <header className="topbar">
           <Link className="brand" href="/">
             ONE / Один
