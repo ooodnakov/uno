@@ -10,8 +10,8 @@ export function CreateRoomDialog() {
       <label>
         Visibility
         <select name="visibility" defaultValue="PUBLIC">
-          <option value="PUBLIC">Public</option>
-          <option value="PRIVATE">Private</option>
+          <option value="PUBLIC">Open table</option>
+          <option value="PRIVATE">Invite table</option>
         </select>
       </label>
       <label>
@@ -25,7 +25,7 @@ export function CreateRoomDialog() {
           required
         />
       </label>
-      <button type="submit">Create room</button>
+      <button type="submit">Deal room</button>
     </form>
   );
 }

@@ -13,7 +13,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
   return (
     <section className="narrow-page">
-      <h1>Login</h1>
+      <p className="eyebrow">Seat check</p>
+      <h1>Return to table</h1>
       <form action={loginAction} className="form-panel">
         {error ? <p className="form-error">{error}</p> : null}
         <label>
@@ -30,7 +31,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           />
         </label>
         <button type="submit">
-          Login
+          Enter lobby
         </button>
       </form>
       <p className="muted">

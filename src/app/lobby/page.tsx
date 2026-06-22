@@ -21,7 +21,7 @@ export default async function LobbyPage({ searchParams }: LobbyPageProps) {
     <section className="page">
       <div className="page-heading">
         <div>
-          <p className="eyebrow">Rooms</p>
+          <p className="eyebrow">Open tables</p>
           <h1>Lobby</h1>
         </div>
         <CreateRoomDialog />
@@ -29,10 +29,10 @@ export default async function LobbyPage({ searchParams }: LobbyPageProps) {
       {error ? <p className="form-error">{error}</p> : null}
       <form action={joinRoomAction} className="join-panel">
         <label>
-          Private code or room id
+          Join private table
           <input name="roomIdOrCode" type="text" required />
         </label>
-        <button type="submit">Join by code</button>
+        <button type="submit">Join</button>
       </form>
       <div className="room-grid">
         {rooms.map((room) => (
@@ -52,7 +52,7 @@ export default async function LobbyPage({ searchParams }: LobbyPageProps) {
         ))}
       </div>
       {rooms.length === 0 ? (
-        <p className="muted">No public waiting rooms yet.</p>
+        <p className="muted">No open tables yet. Deal one and invite a second player.</p>
       ) : null}
     </section>
   );

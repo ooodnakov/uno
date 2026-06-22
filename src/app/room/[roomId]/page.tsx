@@ -52,16 +52,22 @@ export default async function RoomPage({ params }: RoomPageProps) {
 
   return (
     <section className="page">
-      <div className="page-heading">
+      <div className="room-hero">
         <div>
-          <p className="eyebrow">Room</p>
+          <p className="eyebrow">Pocket table</p>
           <h1>{room.name}</h1>
-          <p className="muted">Invite code {room.code}</p>
+        </div>
+        <div className="room-hero-meta" aria-label="Room summary">
+          <span>{room.code}</span>
+          <span>{room.status}</span>
+          <span>
+            {room.players.length}/{room.maxPlayers} seats
+          </span>
         </div>
         {!isMember ? (
           <form action={joinRoomAction}>
             <input name="roomIdOrCode" type="hidden" value={room.id} />
-            <button type="submit">Join room</button>
+            <button type="submit">Join table</button>
           </form>
         ) : null}
       </div>

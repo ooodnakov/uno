@@ -40,7 +40,7 @@ export function RoomClient({
   const [selectedWildCardId, setSelectedWildCardId] = useState<string | null>(
     null,
   );
-  const [activeTab, setActiveTab] = useState<"game" | "chat">("game");
+  const [activeTab, setActiveTab] = useState<"game" | "chat" | "log">("game");
 
   useEffect(() => {
     const nextSocket: ClientSocket = io({
@@ -215,7 +215,7 @@ export function RoomClient({
       {lastReaction ? <p className="reaction-pop">{lastReaction}</p> : null}
       <div className="room-toolbar">
         <div>
-          <span className="muted">Status</span>
+          <span className="muted">Table state</span>
           <strong>{roomState.room.status}</strong>
         </div>
         <div>
@@ -225,7 +225,7 @@ export function RoomClient({
           </strong>
         </div>
         <button type="button" disabled={!canStart} onClick={emitStart}>
-          Start game
+          Start round
         </button>
       </div>
 
@@ -235,24 +235,31 @@ export function RoomClient({
           onClick={() => setActiveTab("game")}
           type="button"
         >
-          Game Board
+          Table
         </button>
         <button
           className={activeTab === "chat" ? "active" : ""}
           onClick={() => setActiveTab("chat")}
           type="button"
         >
-          Chat & Events
+          Chat
+        </button>
+        <button
+          className={activeTab === "log" ? "active" : ""}
+          onClick={() => setActiveTab("log")}
+          type="button"
+        >
+          Log
         </button>
       </div>
 
       {!gameState ? (
-        <div className={activeTab === "chat" ? "hide-on-mobile" : ""}>
+        <div className={activeTab !== "game" ? "hide-on-mobile" : ""}>
           <WaitingRoom roomState={roomState} currentUserId={currentUserId} />
         </div>
       ) : (
         <section
-          className={`game-board ${activeTab === "chat" ? "hide-on-mobile" : ""}`}
+          className={`game-board ${activeTab !== "game" ? "hide-on-mobile" : ""}`}
         >
           <div className="opponent-strip">
             {gameState.players
@@ -284,9 +291,9 @@ export function RoomClient({
               ))}
           </div>
 
-          <div className="table-center">
+          <div className={`table-center ${gameState.table.currentColor.toLowerCase()}`}>
             <div className="pile-card draw-pile">
-              <span>Draw</span>
+              <span>Draw pile</span>
               <strong>{gameState.table.drawCount}</strong>
             </div>
             {topDiscard ? (
@@ -301,11 +308,11 @@ export function RoomClient({
             <div
               className={`current-color ${gameState.table.currentColor.toLowerCase()}`}
             >
-              {gameState.table.currentColor}
+              current: {gameState.table.currentColor}
             </div>
             <div className="turn-panel">
               <span>
-                {gameState.table.direction === 1 ? "Clockwise" : "Counter"}
+                {gameState.table.direction === 1 ? "clockwise" : "counter"}
               </span>
               <strong>{turnSecondsLeft}s</strong>
               <span>
@@ -382,9 +389,9 @@ export function RoomClient({
       )}
 
       <aside
-        className={`live-side ${activeTab === "game" ? "hide-on-mobile" : ""}`}
+        className={`live-side ${activeTab === "game" ? "hide-on-mobile" : ""} ${activeTab === "log" ? "show-log" : "show-chat"}`}
       >
-        <div>
+        <div className="chat-panel">
           <h2>Chat</h2>
           <ul className="chat-list">
             {messages.length === 0 ? <li>No messages yet</li> : null}
@@ -399,7 +406,7 @@ export function RoomClient({
             <button type="submit">Send</button>
           </form>
         </div>
-        <div>
+        <div className="reaction-panel">
           <h2>Reactions</h2>
           <div className="reaction-row">
             {ALLOWED_REACTIONS.map((reaction) => (
@@ -413,7 +420,7 @@ export function RoomClient({
             ))}
           </div>
         </div>
-        <div>
+        <div className="log-panel">
           <h2>Event log</h2>
           <ul className="chat-list">
             {events.length === 0 ? <li>Waiting for events</li> : null}
@@ -440,7 +447,8 @@ function WaitingRoom({
   return (
     <div className="placeholder-panel">
       <div className="table-shell">
-        <h2>Seats</h2>
+        <p className="eyebrow">Waiting table</p>
+        <h2>Seats orbit</h2>
         <div className="seat-list">
           {Array.from({ length: roomState.room.maxPlayers }, (_, seatIndex) => {
             const player = roomState.players.find(
@@ -453,6 +461,7 @@ function WaitingRoom({
                   player?.userId === currentUserId ? "active" : ""
                 }`}
                 key={seatIndex}
+                style={{ "--seat-tilt": `${(seatIndex % 3) - 1}deg` } as React.CSSProperties}
               >
                 <span>Seat {seatIndex + 1}</span>
                 <strong>{player ? player.displayName : "Open seat"}</strong>
